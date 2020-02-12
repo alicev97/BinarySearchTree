@@ -47,15 +47,35 @@ public:
     // clear
     void clear();
 
-    // begin
-    iterator begin();
-    const_iterator begin() const;
-    const_iterator cbegin() const;
+// begin
+    iterator begin(){
+        auto tmp = head.get();
+        while(tmp->left != nullptr){
+            tmp->go_left();
+        }
+        return iterator{tmp};
+    }
+
+    const_iterator begin() const{
+        auto tmp = head.get();
+        while(tmp->left != nullptr){
+            tmp->go_left();
+        }
+        return const_iterator{tmp};
+    }
+
+    const_iterator cbegin() const{
+        auto tmp = head.get();
+        while(tmp->left != nullptr){
+            tmp->go_left();
+        }
+        return const_iterator{tmp};
+    }
 
     // end
-    iterator end();
-    const_iterator end() const;
-    const_iterator cend() const;
+    iterator end(){return iterator{nullptr};}
+    const_iterator end() const{return const_iterator{nullptr};}
+    const_iterator cend() const{return const_iterator{nullptr};}
 
     // find
     iterator find(const kT& x);

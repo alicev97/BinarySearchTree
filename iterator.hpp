@@ -17,6 +17,7 @@ class _iterator{
 
 public:
     //ctor
+    _iterator() noexcept : current(nullptr) {}
     explicit _iterator(node_type* x) noexcept : current{x} {}
 
     using value_type = O;
@@ -29,15 +30,38 @@ public:
     reference operator*() const noexcept { return current->value;}
     pointer operator->() const noexcept { return &(*(*this)); } 
 
-    //returns a new iterator (class reference)
+   //returns a new iterator (class reference)
     _iterator& operator++() noexcept {
-    //find the  next and put the pointer in current
+
+        if (current->right != nullptr){
+            (*this).go_right();
+            while(current->left != nullptr){
+                (*this).go_left();
+            }
+        }
+        else {
+            if(current->parent == nullptr){
+                current = nullptr;
+                }
+            else{
+            while(current->value.first > current->parent->value.first){
+                (*this).go_up();
+                if(current->parent == nullptr){
+                current = nullptr;
+                break;
+                }
+            }
+            }
+        }
+
     return *this;
     }
+    
     _iterator operator++(int) noexcept {
-    //find the  next and put the pointer in current
-    return *this;
-    }
+        _iterator tmp{current};
+        ++(*this);
+        return tmp;
+  }
     friend bool operator==(const _iterator& a, const _iterator& b) {
     return a.current == b.current;
     }
@@ -45,14 +69,9 @@ public:
     return !(a == b);
     }
 
-    void go_left(){
-        current=current->left.get();
-    }    
-
-    _iterator go_right(){
-        current=current->right.get();
-        return *this;
-    }
+    void go_left(){current=current->left.get();}
+    void go_right(){current=current->right.get();}
+    void go_up(){current = current->parent;}
 
     bool is_leaf(){
         if (current->left.get()==nullptr && current->right.get()==nullptr){

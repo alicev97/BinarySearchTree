@@ -28,12 +28,14 @@ struct Node{
     ~Node() noexcept = default;
 
     // copy ctor (just create a node with the same pair?)
-    Node(const Node& n); //to be implemented?
+    Node(const Node& n): value{n.value} {};
     // move ctor
     Node(Node&& n) noexcept = default;
     // move assignment
-    Node& operator=(Node&&) noexcept = default;
+    Node& operator=(Node&& n) noexcept = default; // do not work bc of the const int
     //copy assignment
+    Node& operator=(const Node& n); // to be implemented (do not work bc of move assignement)
+
     Node& operator=(const Node&); // to be implemented?
 
     //put-to overloading
