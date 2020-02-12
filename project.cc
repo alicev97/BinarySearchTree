@@ -8,36 +8,37 @@
 #include "node.hpp"
 #include "iterator.hpp"
 
-int main(){
-    using coppia = std::pair<const int,int>;
+int main()
+{
+    using coppia = std::pair<const int, int>;
     using nodo = Node<coppia>;
-    using iteratore=_iterator<nodo,coppia>;
+    using iteratore = _iterator<nodo, coppia>;
 
-    coppia p1{21,2}; 
-    coppia p2{26,2};
-    coppia p3{25,16};
-    bst<const int, int> a{23,15};
+    coppia p1{21, 2};
+    coppia p2{26, 2};
+    coppia p3{25, 16};
+    bst<const int, int> a{23, 15};
 
-    nodo* n1 = a.get_head().get_pointer();
-    //std::cout << *n1 << std::endl;
-    //nodo* n2{new nodo{coppia{26,16}}};
+    // n1 is a pointer to head
+    nodo *n1 = a.get_head().get_pointer();
 
+    // insert a left child with const &. n2 pointer to left child
     auto result1 = a.insert(p1);
-    //auto result2 = a.insert(p2);
-    //auto result3 = a.insert({25,16});
+    nodo *n2 = n1->left.get();
+    //insert a right child with &&. n3 pointer to right child
+    auto result2 = a.insert(std::pair<const int, int>{25, 16});
+    nodo *n3 = n1->right.get();
 
-    //nodo* n1{new nodo{coppia{23,2}}};
-    
-    //a.get_head().get_pointer()->add_right(n2);
+    // insert a left child of the right child. n4 points to it
+    auto result3 = a.emplace(24, 13);
+    nodo *n4 = n3->left.get();
 
-    //n1->add_left(p1);
-    //nodo* n3 = n1->left.get();
-    nodo* n2 = n1->left.get();
-    //nodo* n4 = n2->left.get();
+    //try std::forward
+    //nodo* prova = a.dummy(2,1);
 
+    // print head, left, right
     std::cout << *n1 << std::endl;
     std::cout << *n2 << std::endl;
-   // std::cout << *n3 << std::endl;
-    //std::cout << *n4 << std::endl;
-    
+    std::cout << *n3 << std::endl;
+    std::cout << *n4 << std::endl;
 }

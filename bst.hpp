@@ -21,7 +21,7 @@ class bst{
 public:
     //ctors and destructor
     bst() = default;
-    ~bst() noexcept { std::cout << "bst destructor" << std::endl;};
+    ~bst() noexcept = default;
     //ctom ctor with key and value, calls the node ctor
     explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{}
     
@@ -35,8 +35,9 @@ public:
     
     // functions
     // insert
-    std::pair<iterator,bool> insert(const pair_type& x);
-    std::pair<iterator,bool> insert(pair_type&& x);
+    //std::pair<iterator,bool> insert(const pair_type& x);
+    template<typename OT>
+    std::pair<iterator,bool> insert(OT&& x);
 
     // emplace
     template<class... Types>
@@ -96,7 +97,7 @@ public:
     //returns a reference to the pair of the head
     iterator get_head(){return iterator{head.get()};} 
     iterator get_new_parent(pair_type x);
-    
+
 };
 
 template<typename kT, typename vT, typename cmp>
@@ -123,44 +124,11 @@ typename bst<kT, vT, cmp>::iterator bst<kT, vT, cmp>::get_new_parent(typename bs
     
     return tmp;
 }
-/*
-template<typename kT,typename vT, typename cmp>
-std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(bst<kT,vT,cmp>::pair_type&& x){
-    auto p = (*this).get_new_parent(x);
 
-    if (x.first == p->first){
-        std::cout << "this key already exists:" << std::endl;
-        std::cout << p->first << ";" << p->second << std::endl;
-        std::cout << "but I change the value:"<< std::endl;
-        p->second=x.second;
-        std::cout << p->first << ";" << p->second << std::endl;
-        std::pair<iterator,bool> result(p,false);
-        return result;
-    } else {
-        node_type* parent = p.get_pointer();
-        if (x.first > p->first){
-            // create the node
-            node_type n{x};
-            //adding the node
-            parent->add_right(n);
-            iterator it{parent->right.get()};
-            std::pair<iterator,bool> result(it,true);
-            return result;
-        } else {
-            node_type n{x};
-            parent->add_left(n);
-            iterator it{parent->left.get()};
-            std::pair<iterator,bool> result(it,true);
-            return result;
-        }
-        
-        
-    }
-}
-*/
 
 template<typename kT,typename vT, typename cmp>
-std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(const bst<kT,vT,cmp>::pair_type& x){
+template<typename OT>
+std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(OT&& x){
     
     //find my parent
     auto p = (*this).get_new_parent(x);
@@ -176,8 +144,30 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(const b
         std::pair<iterator,bool> result(it,true);
         return result;
     }
-    
 }
+
+
+template<typename kT,typename vT,typename cmp>
+template<class... Types>
+std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&&... args){
+
+    node_type* new_node{new node_type{pair_type{std::forward<Types>(args)...}}};
+
+    auto p = (*this).get_new_parent(new_node->value);
+    node_type* parent = p.get_pointer();
+
+    if (new_node->value.first==parent->value.first){
+        parent->modify_value(new_node->value);
+        std::pair<iterator,bool> result(p,false);
+        return result;
+    } else {
+        iterator it{parent->add_child(new_node)};
+        std::pair<iterator,bool> result(it,true);
+        return result;
+    }   
+}
+
+
 
 template<typename KT,typename VT,typename CMP>
 std::ostream& operator<<(std::ostream& os, const bst<KT,VT,CMP>& x){

@@ -25,7 +25,7 @@ struct Node{
     Node() noexcept = default;
     explicit Node(T pair): value{pair}, left{nullptr},right{nullptr},parent{nullptr} {}
     explicit Node(T pair, Node* p): value{pair}, parent{p} {}
-    ~Node() noexcept {std::cout << "node destructor" << std::endl;};
+    ~Node() noexcept = default;
 
     // copy ctor (just create a node with the same pair?)
     Node(const Node& n): value{n.value} {};

@@ -21,7 +21,7 @@ public:
     explicit _iterator(node_type* x) noexcept : current{x} {}
 
     //destructor
-    ~_iterator() noexcept {std::cout << "iterator destructor" << std::endl;};
+    ~_iterator() noexcept = default;
 
     using value_type = O;
     using reference = value_type&;
