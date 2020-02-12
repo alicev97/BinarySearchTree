@@ -43,18 +43,32 @@ public:
     template<class... Types>
     std::pair<iterator,bool> emplace(Types&&... args);
 
-    // clear
+        // clear
     void clear(){
         iterator it{head.get()};
         while(head != nullptr){
+        while (!it.is_leaf()){
         while (it.has_left()){
             it.go_left();
         }
         while(it.has_right()){
             it.go_right();
         }
+        }
         std::cout << "I should remove node :" << it->first << std::endl;
+        if(it.get_pointer() != head.get()){
         it.go_up();
+        std::cout << "I'm gone up to:" << it.get_pointer() << std::endl;
+        if (it.has_left()){
+        it.get_pointer()->left.release();
+        } else{
+            it.get_pointer()->right.reset();
+        }
+        std::cout << "Now the node is: " << it.get_pointer()->left.get() << std::endl;
+        } else{
+            head.release();
+            std::cout << "Done" << std::endl;
+        }
         }
     }
 
