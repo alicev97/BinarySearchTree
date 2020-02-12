@@ -44,7 +44,19 @@ public:
     std::pair<iterator,bool> emplace(Types&&... args);
 
     // clear
-    void clear();
+    void clear(){
+        iterator it{head.get()};
+        while(head != nullptr){
+        while (it.has_left()){
+            it.go_left();
+        }
+        while(it.has_right()){
+            it.go_right();
+        }
+        std::cout << "I should remove node :" << it->first << std::endl;
+        it.go_up();
+        }
+    }
 
 // begin
     iterator begin(){

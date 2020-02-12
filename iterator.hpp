@@ -88,6 +88,22 @@ public:
             return false;
         }
     }
+
+    bool has_left(){
+        if (current->left.get() != nullptr){
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+    bool has_right(){
+        if (current->right.get() != nullptr){
+            return true;
+        } else {
+            return false;
+        }
+    }
    
    node_type* get_pointer(){return current;}
 
