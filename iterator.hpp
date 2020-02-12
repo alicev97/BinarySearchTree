@@ -20,6 +20,9 @@ public:
     _iterator() noexcept : current(nullptr) {}
     explicit _iterator(node_type* x) noexcept : current{x} {}
 
+    //destructor
+    ~_iterator() noexcept {std::cout << "iterator destructor" << std::endl;};
+
     using value_type = O;
     using reference = value_type&;
     using pointer = value_type*;
@@ -34,23 +37,28 @@ public:
     _iterator& operator++() noexcept {
 
         if (current->right != nullptr){
+            std::cout << "ho figli a destra" << std::endl;
             (*this).go_right();
             while(current->left != nullptr){
                 (*this).go_left();
             }
         }
         else {
+            std::cout << "non ho figli a destra" << std::endl;
             if(current->parent == nullptr){
                 current = nullptr;
                 }
             else{
+                std::cout << "non sono l'head" << std::endl;
             while(current->value.first > current->parent->value.first){
+                std::cout << "inside the while" << std::endl;
                 (*this).go_up();
                 if(current->parent == nullptr){
                 current = nullptr;
                 break;
                 }
             }
+            (*this).go_up();
             }
         }
 

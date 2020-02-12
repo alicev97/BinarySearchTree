@@ -21,12 +21,10 @@ class bst{
 public:
     //ctors and destructor
     bst() = default;
-    ~bst() = default;
+    ~bst() noexcept { std::cout << "bst destructor" << std::endl;};
     //ctom ctor with key and value, calls the node ctor
-    //bst(kT a,vT b): head{std::unique_ptr<node_type>(&Node<pair_type>{std::pair<kT,vT>(a,b)})}{}
-    bst(kT a, vT b) {
-        head.reset(new node_type(pair_type(a,b)));
-    }
+    explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{}
+    
     // copy semantic
 
     // move semantic
@@ -49,27 +47,27 @@ public:
 
 // begin
     iterator begin(){
-        auto tmp = head.get();
-        while(tmp->left != nullptr){
-            tmp->go_left();
+        iterator tmp{(*this).get_head()};
+        while(tmp.get_pointer()->left.get() != nullptr){
+            tmp.go_left();
         }
-        return iterator{tmp};
+        return tmp;
     }
 
     const_iterator begin() const{
-        auto tmp = head.get();
-        while(tmp->left != nullptr){
-            tmp->go_left();
+        const_iterator tmp{(*this).get_head()};
+        while(tmp.get_pointer()->left.get() != nullptr){
+            tmp.go_left();
         }
-        return const_iterator{tmp};
+        return tmp;
     }
 
     const_iterator cbegin() const{
-        auto tmp = head.get();
-        while(tmp->left != nullptr){
-            tmp->go_left();
+        const_iterator tmp{(*this).get_head()};
+        while(tmp.get_pointer()->left.get() != nullptr){
+            tmp.go_left();
         }
-        return const_iterator{tmp};
+        return tmp;
     }
 
     // end
@@ -88,7 +86,8 @@ public:
     vT& operator[](const kT& x);
     vT& operator[](kT&& x);
 
-    //friend std::ostream& operator<<(std::ostream& os, const bst& x);
+    template<typename KT,typename VT,typename CMP>
+    friend std::ostream& operator<<(std::ostream& os, const bst<KT,VT,CMP>& x);
 
     // erase
     void erase(const kT& x);
@@ -102,32 +101,33 @@ public:
 
 template<typename kT, typename vT, typename cmp>
 typename bst<kT, vT, cmp>::iterator bst<kT, vT, cmp>::get_new_parent(typename bst<kT, vT, cmp>::pair_type x){
-    
     kT key=x.first;
     //tmp is an iterator pointing to head and then 
     iterator tmp{this->get_head()};
-    
     // while tmp is not a null ptr
     while (tmp.is_leaf()==false){
     if (key < tmp->first){
-        tmp.go_left();
-        //std::cout << "left" << std::endl;
+        if (tmp.get_pointer()->left.get()!=NULL){
+            tmp.go_left();
+        } else { break;}
+        
     } else if (key > tmp->first){
+        if (tmp.get_pointer()->right.get()!=NULL){
         tmp.go_right();
-        //std::cout << "right" << std::endl;
+        } else {break;}
     } else {
         // if I've found the key
         break;
     }
     }
+    
     return tmp;
 }
-
+/*
 template<typename kT,typename vT, typename cmp>
-std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(const bst<kT,vT,cmp>::pair_type& x){
-    //find my parent
+std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(bst<kT,vT,cmp>::pair_type&& x){
     auto p = (*this).get_new_parent(x);
-    
+
     if (x.first == p->first){
         std::cout << "this key already exists:" << std::endl;
         std::cout << p->first << ";" << p->second << std::endl;
@@ -139,12 +139,51 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(const b
     } else {
         node_type* parent = p.get_pointer();
         if (x.first > p->first){
-            parent->add_right(x);
+            // create the node
+            node_type n{x};
+            //adding the node
+            parent->add_right(n);
             iterator it{parent->right.get()};
             std::pair<iterator,bool> result(it,true);
             return result;
         } else {
-            parent->add_left(x);
+            node_type n{x};
+            parent->add_left(n);
+            iterator it{parent->left.get()};
+            std::pair<iterator,bool> result(it,true);
+            return result;
+        }
+        
+        
+    }
+}
+*/
+
+template<typename kT,typename vT, typename cmp>
+std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(const bst<kT,vT,cmp>::pair_type& x){
+    
+    
+    //find my parent
+    auto p = (*this).get_new_parent(x);
+
+    if (x.first == p->first){
+        std::cout << "this key already exists:" << std::endl;
+        std::cout << p->first << ";" << p->second << std::endl;
+        std::cout << "but I change the value:"<< std::endl;
+        p->second=x.second;
+        std::cout << p->first << ";" << p->second << std::endl;
+        std::pair<iterator,bool> result(p,false);
+        return result;
+    } else {
+        node_type* n{new node_type{x}};
+        node_type* parent = p.get_pointer();
+        if (x.first > p->first){
+            parent->add_right(n);
+            iterator it{parent->right.get()};
+            std::pair<iterator,bool> result(it,true);
+            return result;
+        } else {
+            parent->add_left(n);
             iterator it{parent->left.get()};
             std::pair<iterator,bool> result(it,true);
             return result;
@@ -155,4 +194,8 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(const b
     
 }
 
+template<typename KT,typename VT,typename CMP>
+std::ostream& operator<<(std::ostream& os, const bst<KT,VT,CMP>& x){
+
+}
 #endif

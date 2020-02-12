@@ -22,10 +22,10 @@ struct Node{
     using pair_type = T;
 
     //ctors and destructor
-    Node() = default;
-    Node(T pair): value{pair}, left{nullptr},right{nullptr},parent{nullptr} {}
-    Node(T pair, Node* p): value{pair}, parent{p} {}
-    ~Node() noexcept = default;
+    Node() noexcept = default;
+    explicit Node(T pair): value{pair}, left{nullptr},right{nullptr},parent{nullptr} {}
+    explicit Node(T pair, Node* p): value{pair}, parent{p} {}
+    ~Node() noexcept {std::cout << "node destructor" << std::endl;};
 
     // copy ctor (just create a node with the same pair?)
     Node(const Node& n): value{n.value} {};
@@ -35,8 +35,6 @@ struct Node{
     Node& operator=(Node&& n) noexcept = default; // do not work bc of the const int
     //copy assignment
     Node& operator=(const Node& n); // to be implemented (do not work bc of move assignement)
-
-    Node& operator=(const Node&); // to be implemented?
 
     //put-to overloading
     friend
@@ -55,13 +53,34 @@ struct Node{
     }
 
     // add child
-    void add_right(T x){
-        right.reset(new Node(x,this));
-    }
-    void add_left(T x){
-        left.reset(new Node(x,this));
+    //void add_right(const T& x){ right.reset(new Node(x,this)); }
+    //void add_left(const T& x){ left.reset(new Node(x,this)); }
+
+    void add_right(Node* x){
+        std::cout << "before"<<*x << std::endl;
+        std::cout << *this << std::endl;
+        right.reset(x);
+        std::cout <<"after"<< *x << std::endl;
+        std::cout << *this << std::endl;
+        x->set_parent(this);
+        std::cout <<"after2"<< *x << std::endl;
+        std::cout << *this << std::endl;
     }
 
+    void add_left(Node* x){
+        left.reset(x);
+        (*x).set_parent(this);
+    }
+/*
+    void add_right(T&& x){ 
+        right.reset(&x);
+        x.set_parent(this);
+     }
+    void add_left(T&& x){ 
+        left.reset(&x);
+        x.set_parent(this);
+     }
+*/
     // check key
     bool key_equality(Node* p){
         if(p->value.first == value.first){
