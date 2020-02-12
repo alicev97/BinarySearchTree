@@ -162,34 +162,19 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(bst<kT,
 template<typename kT,typename vT, typename cmp>
 std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(const bst<kT,vT,cmp>::pair_type& x){
     
-    
     //find my parent
     auto p = (*this).get_new_parent(x);
+    node_type* parent = p.get_pointer();
 
     if (x.first == p->first){
-        std::cout << "this key already exists:" << std::endl;
-        std::cout << p->first << ";" << p->second << std::endl;
-        std::cout << "but I change the value:"<< std::endl;
-        p->second=x.second;
-        std::cout << p->first << ";" << p->second << std::endl;
+        parent->modify_value(x);
         std::pair<iterator,bool> result(p,false);
         return result;
     } else {
         node_type* n{new node_type{x}};
-        node_type* parent = p.get_pointer();
-        if (x.first > p->first){
-            parent->add_right(n);
-            iterator it{parent->right.get()};
-            std::pair<iterator,bool> result(it,true);
-            return result;
-        } else {
-            parent->add_left(n);
-            iterator it{parent->left.get()};
-            std::pair<iterator,bool> result(it,true);
-            return result;
-        }
-        
-        
+        iterator it{parent->add_child(n)};
+        std::pair<iterator,bool> result(it,true);
+        return result;
     }
     
 }

@@ -56,31 +56,7 @@ struct Node{
     //void add_right(const T& x){ right.reset(new Node(x,this)); }
     //void add_left(const T& x){ left.reset(new Node(x,this)); }
 
-    void add_right(Node* x){
-        std::cout << "before"<<*x << std::endl;
-        std::cout << *this << std::endl;
-        right.reset(x);
-        std::cout <<"after"<< *x << std::endl;
-        std::cout << *this << std::endl;
-        x->set_parent(this);
-        std::cout <<"after2"<< *x << std::endl;
-        std::cout << *this << std::endl;
-    }
 
-    void add_left(Node* x){
-        left.reset(x);
-        (*x).set_parent(this);
-    }
-/*
-    void add_right(T&& x){ 
-        right.reset(&x);
-        x.set_parent(this);
-     }
-    void add_left(T&& x){ 
-        left.reset(&x);
-        x.set_parent(this);
-     }
-*/
     // check key
     bool key_equality(Node* p){
         if(p->value.first == value.first){
@@ -89,6 +65,28 @@ struct Node{
             return false;
         }
     }
+
+    void modify_value(T x){
+        std::cout << "this key already exists:" << std::endl;
+        std::cout << value.first << ";" << value.second << std::endl;
+        std::cout << "but I change the value:"<< std::endl;
+        value.second=x.second;
+        std::cout << value.first << ";" << value.second << std::endl;
+    }
+
+    Node* add_child(Node* x){
+        if (x->value.first > value.first){
+            right.reset(x);
+            x->set_parent(this);
+            return right.get();
+        } else {
+            left.reset(x);
+            (*x).set_parent(this);
+            return left.get();
+        }
+    }
+
+
 };
 
 #endif
