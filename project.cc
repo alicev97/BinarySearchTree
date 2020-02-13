@@ -47,5 +47,5 @@ int main()
     std::cout << std::endl << *n4;
     std::cout << "is this a new node? " << result3.second << "\n" << std::endl;
     // printing the full tree
-    std::cout << a << std::endl;
+    std::cout <<"tree:"<< a << std::endl;
 }

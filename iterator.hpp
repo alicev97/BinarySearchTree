@@ -19,6 +19,7 @@ public:
     //ctor
     _iterator() noexcept : current(nullptr) {}
     explicit _iterator(node_type* x) noexcept : current{x} {}
+    //explicit _iterator(const _iterator it): current{it.get_pointer()} {}
 
     //destructor
     ~_iterator() noexcept = default;

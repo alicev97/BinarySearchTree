@@ -66,14 +66,6 @@ struct Node{
         }
     }
 
-    void modify_value(T x){
-        std::cout << "this key already exists:" << std::endl;
-        std::cout << value.first << ";" << value.second << std::endl;
-        std::cout << "but I change the value:"<< std::endl;
-        value.second=x.second;
-        std::cout << value.first << ";" << value.second << std::endl;
-    }
-
     Node* add_child(Node* x){
         if (x->value.first > value.first){
             right.reset(x);
