@@ -17,8 +17,8 @@ int main()
     using const_iteratore = albero::const_iterator;
 
     coppia p1{21, 2};
-    coppia p2{26, 2};
-    coppia p3{25, 16};
+    coppia p2{15, 2};
+    coppia p3{11, 16};
     albero a{23, 15};
 
 
@@ -29,11 +29,11 @@ int main()
     auto result1 = a.insert(p1);
     nodo *n2 = n1->left.get();
     //insert a right child with &&. n3 pointer to right child
-    auto result2 = a.insert(std::pair<const int, int>{26, 16});
-    nodo *n3 = n1->right.get();
+    auto result2 = a.insert(std::pair<const int, int>{15, 16});
+    nodo *n3 = n2->left.get();
 
     // insert a left child of the right child. n4 points to it
-    auto result3 = a.emplace(25, 13);
+    auto result3 = a.emplace(11, 13);
     nodo *n4 = n3->left.get();
 
 
@@ -52,6 +52,7 @@ int main()
 
     std::cout << a << std::endl;
 
+    /*
     //const_iteratore it1 = a.find(23);
     iteratore it2 = a.find(23);
     int g{21};
@@ -61,6 +62,19 @@ int main()
     
     std::cout << a << std::endl;
     //a.dummy();
+    */
     a.balance();
+    
+
+
+    nodo* n5 = a.get_head().get_pointer();
+    nodo* n6 = n5->left.get();
+    nodo* n7 = n5->right.get();
+    nodo* n8 = n7->right.get();
+    //head
+    std::cout << *n5 << std::endl;
+    std::cout << *n6 << std::endl;
+    std::cout << *n7 << std::endl;
+    std::cout << *n8 << std::endl;
     
 }

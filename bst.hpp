@@ -295,23 +295,6 @@ vT& bst<kT,vT,cmp>::operator[](OT&& x){
 
 }
 
-/*
-template<typename kT,typename vT,typename cmp>
-template<typename T>
-Node<T>* rebuild_tree(std::vector<T>& v,){
-    
-    std::size_t t{v.size()};
-    //to be returned
-    Node<T>* n{new Node<T>{v[t/2]}};
-    bst<kT,vT,cmp> tree{n};
-    
-    tree.insert(v[t/2]);
-
-    
-    
-    return n;
-}
-*/
 
 template<typename kT,typename vT, typename cmp>
 void bst<kT,vT,cmp>::balance(){
@@ -331,22 +314,20 @@ void bst<kT,vT,cmp>::balance(){
     std::size_t size{tmp.size()};
     rebuild_from_vector(tmp,0,size-1);
 
-    std::cout << head.get()->value.first << "," << head.get()->value.second << std::endl;
 }
 
 template<typename kT, typename vT, typename cmp>    
 void bst<kT,vT,cmp>::rebuild_from_vector(std::vector<bst<kT,vT,cmp>::pair_type> v, std::size_t from,std::size_t to){
     
-    while (to-from >= 0) {
+    if (to>=from){
         std::size_t t{(to+from)/2};
 
         insert(v[t]);
+        if (!(to==from)){
         rebuild_from_vector(v,from,t-1);
         rebuild_from_vector(v,t+1,to);
+        }
     }
-
 }
-
-
 
 #endif
