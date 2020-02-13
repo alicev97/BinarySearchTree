@@ -106,6 +106,12 @@ template<typename kT,typename vT, typename cmp>
 template<typename OT>
 std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(OT&& x){
     
+    if(head == nullptr){
+        head = std::make_unique<node_type>(x);
+        iterator it {head.get()};
+        std::pair<iterator,bool> result(it,false);
+        return result;
+    }
     //find my parent
     auto p = (*this).get_new_parent(x);
     node_type* parent = p.get_pointer();
@@ -122,7 +128,6 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(OT&& x)
     }
 }
 
-
 template<typename kT,typename vT,typename cmp>
 template<class... Types>
 std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&&... args){
@@ -130,6 +135,12 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
 
     node_type* new_node{new node_type{pair_type{std::forward<Types>(args)...}}};
 
+    if(head == nullptr){
+        head.reset(new_node);
+        iterator it {head.get()};
+        std::pair<iterator,bool> result(it,false);
+        return result;
+    }
     auto p = (*this).get_new_parent(new_node->value);
     node_type* parent = p.get_pointer();
 
