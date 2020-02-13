@@ -73,8 +73,9 @@ public:
     }
 
 // begin
+    
     iterator begin(){
-        iterator tmp{(*this).get_head()};
+        iterator tmp{head.get()};
         while(tmp.get_pointer()->left.get() != nullptr){
             tmp.go_left();
         }
@@ -82,10 +83,11 @@ public:
     }
 
     const_iterator begin() const{
-        const_iterator tmp{(*this).get_head()};
+        const_iterator tmp(head.get());
         while(tmp.get_pointer()->left.get() != nullptr){
             tmp.go_left();
         }
+        std::cout << "I'm the const one" << std::endl;
         return tmp;
     }
 
@@ -110,8 +112,8 @@ public:
     void balance();
 
     // operator overloading 
-    vT& operator[](const kT& x);
-    vT& operator[](kT&& x);
+    template<typename OT>
+    vT& operator[](OT&& x);
 
     template<typename KT,typename VT,typename CMP>
     friend std::ostream& operator<<(std::ostream& os, const bst<KT,VT,CMP>& x);
@@ -177,6 +179,7 @@ template<typename kT,typename vT,typename cmp>
 template<class... Types>
 std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&&... args){
 
+
     node_type* new_node{new node_type{pair_type{std::forward<Types>(args)...}}};
 
     auto p = (*this).get_new_parent(new_node->value);
@@ -185,6 +188,7 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
     if (new_node->value.first==parent->value.first){
         parent->modify_value(new_node->value);
         std::pair<iterator,bool> result(p,false);
+        delete new_node;
         return result;
     } else {
         iterator it{parent->add_child(new_node)};
@@ -193,10 +197,33 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
     }   
 }
 
-
-
 template<typename KT,typename VT,typename CMP>
 std::ostream& operator<<(std::ostream& os, const bst<KT,VT,CMP>& x){
 
+    auto it = x.begin();
+    while (it != x.end()){
+        os << it->first << " ";
+        ++it;
+    }
+    os << std::endl;
+    return os;
 }
+
+/*
+template<typename kT, typename vT, typename cmp>
+template<typename OT>
+vT& bst<kT,vT,cmp>::operator[](OT&& x){
+
+    pair_type p{x,vT{}};
+    auto it = find(x);//returns an iterator to the element or an iterator pointing end
+    
+    if (it == end()){
+        insert(p)
+    } else {
+        return *it;
+    }
+
+}
+*/
+
 #endif

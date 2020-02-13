@@ -35,27 +35,23 @@ public:
 
    //returns a new iterator (class reference)
     _iterator& operator++() noexcept {
-
+        
         if (current->right != nullptr){
-            std::cout << "ho figli a destra" << std::endl;
             (*this).go_right();
             while(current->left != nullptr){
                 (*this).go_left();
             }
         }
         else {
-            std::cout << "non ho figli a destra" << std::endl;
             if(current->parent == nullptr){
                 current = nullptr;
                 }
             else{
-                std::cout << "non sono l'head" << std::endl;
             while(current->value.first > current->parent->value.first){
-                std::cout << "inside the while" << std::endl;
                 (*this).go_up();
                 if(current->parent == nullptr){
                 current = nullptr;
-                break;
+                return *this;
                 }
             }
             (*this).go_up();
