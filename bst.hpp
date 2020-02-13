@@ -13,12 +13,13 @@
 
 template<typename kT, typename vT, typename cmp = std::less<kT>>
 class bst{
-    using node_type = Node<std::pair<const kT, vT>>;
+    using node_type = Node<std::pair<const kT,vT>>;
     using pair_type = std::pair<const kT, vT>;
 
     //variables
     std::unique_ptr<node_type> head=NULL;
     cmp op;
+
 public:
     //ctors and destructor
     bst() = default;
@@ -26,7 +27,7 @@ public:
     //ctom ctor with key and value, calls the node ctor
     explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{}
     explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {}
-    
+
     // copy semantic
 
     // move semantic
@@ -75,6 +76,7 @@ public:
 
     // end
     iterator end(){return iterator{nullptr};}
+
     const_iterator end() const{return const_iterator{nullptr};}
     const_iterator cend() const{return const_iterator{nullptr};}
 
@@ -99,6 +101,7 @@ public:
     //returns a reference to the pair of the head
     iterator get_head(){return iterator{head.get()};} 
     iterator get_new_parent(pair_type x);
+
 };
 
 // insert
@@ -116,8 +119,10 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(OT&& x)
     auto p = (*this).get_new_parent(x);
     node_type* parent = p.get_pointer();
 
+
     if (!op(x.first, p->first) && !op(p->first,x.first)){
         parent->value.second = x.second;
+
         std::pair<iterator,bool> result(p,false);
         return result;
     } else {
@@ -132,7 +137,6 @@ template<typename kT,typename vT,typename cmp>
 template<class... Types>
 std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&&... args){
 
-
     node_type* new_node{new node_type{pair_type{std::forward<Types>(args)...}}};
 
     if(head == nullptr){
@@ -141,12 +145,15 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
         std::pair<iterator,bool> result(it,false);
         return result;
     }
+
     auto p = (*this).get_new_parent(new_node->value);
     node_type* parent = p.get_pointer();
 
     if (!op(new_node->value.first, parent->value.first) && !op(parent->value.first, new_node->value.first)){
         parent->value.second = new_node->value.second;
+
         std::pair<iterator,bool> result(p,false);
+        std::cout << "modified an existent node" << std::endl;
         delete new_node;
         return result;
     } else {
@@ -178,20 +185,24 @@ void bst<kT, vT, cmp>::clear(){
     } else{
         head.release();
     }
+
     }
+    }
+
 }
 
 
 template<typename kT, typename vT, typename cmp>
-typename bst<kT, vT, cmp>::iterator bst<kT, vT, cmp>::find(const kT& x){
+typename bst<kT,vT,cmp>::const_iterator bst<kT, vT, cmp>::find(const kT& x) const {
 
-    iterator tmp{head.get()};
+    const_iterator tmp{head.get()};
     while (op(x, tmp->first) || op(tmp->first, x) || !tmp.is_leaf()){
     if (op(x, tmp->first)){
         if (tmp.has_left()){
             tmp.go_left();
         } else { break;}
     } else if (op(tmp->first, x)){
+
         if (tmp.has_right()){
         tmp.go_right();
         } else {break;}
@@ -199,6 +210,7 @@ typename bst<kT, vT, cmp>::iterator bst<kT, vT, cmp>::find(const kT& x){
         break;
     }
     }
+
     if (!op(x, tmp->first) && !op(tmp->first, x)){
     return tmp;
     } else{return end();}
@@ -214,6 +226,7 @@ typename bst<kT, vT, cmp>::const_iterator bst<kT, vT, cmp>::find(const kT& x) co
             tmp.go_left();
         } else { break;}
     } else if (op(tmp->first, x)){
+
         if (tmp.has_right()){
         tmp.go_right();
         } else {break;}
@@ -226,20 +239,21 @@ typename bst<kT, vT, cmp>::const_iterator bst<kT, vT, cmp>::find(const kT& x) co
     } else{return end();}
 }
 
-
-
 template<typename kT, typename vT, typename cmp>
 typename bst<kT, vT, cmp>::iterator bst<kT, vT, cmp>::get_new_parent(typename bst<kT, vT, cmp>::pair_type x){
-    //tmp is an iterator pointing to head and then 
+
     iterator tmp{this->get_head()};
-    // while tmp is not a null ptr
+    
     while (tmp.is_leaf()==false){
+
     if (op(x.first, tmp->first)){
+
         if (tmp.get_pointer()->left.get()!=NULL){
             tmp.go_left();
         } else { break;}
         
     } else if (op(tmp->first, x.first)){
+
         if (tmp.get_pointer()->right.get()!=NULL){
         tmp.go_right();
         } else {break;}
@@ -273,9 +287,10 @@ vT& bst<kT,vT,cmp>::operator[](OT&& x){
     auto it = find(x);//returns an iterator to the element or an iterator pointing end
     
     if (it == end()){
-        insert(p);
+        std::pair<iterator,bool> result = insert(p);
+        return result.first->second;
     } else {
-        return *it;
+        return it->second;
     }
 
 }
