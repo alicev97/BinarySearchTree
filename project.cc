@@ -36,6 +36,7 @@ int main()
     auto result3 = a.emplace(25, 13);
     nodo *n4 = n3->left.get();
 
+
     //try std::forward
     //nodo* prova = a.dummy(2,1);
 
@@ -60,5 +61,6 @@ int main()
     
     std::cout << a << std::endl;
     //a.dummy();
-
+    a.balance();
+    
 }

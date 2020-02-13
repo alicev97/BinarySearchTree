@@ -102,6 +102,8 @@ public:
     iterator get_head(){return iterator{head.get()};} 
     iterator get_new_parent(pair_type x);
 
+    void rebuild_from_vector(std::vector<pair_type> v, std::size_t from,std::size_t to);
+
 };
 
 // insert
@@ -187,15 +189,13 @@ void bst<kT, vT, cmp>::clear(){
     }
 
     }
-    }
-
 }
 
 
 template<typename kT, typename vT, typename cmp>
-typename bst<kT,vT,cmp>::const_iterator bst<kT, vT, cmp>::find(const kT& x) const {
+typename bst<kT,vT,cmp>::iterator bst<kT, vT, cmp>::find(const kT& x) {
 
-    const_iterator tmp{head.get()};
+    iterator tmp{head.get()};
     while (op(x, tmp->first) || op(tmp->first, x) || !tmp.is_leaf()){
     if (op(x, tmp->first)){
         if (tmp.has_left()){
@@ -294,5 +294,59 @@ vT& bst<kT,vT,cmp>::operator[](OT&& x){
     }
 
 }
+
+/*
+template<typename kT,typename vT,typename cmp>
+template<typename T>
+Node<T>* rebuild_tree(std::vector<T>& v,){
+    
+    std::size_t t{v.size()};
+    //to be returned
+    Node<T>* n{new Node<T>{v[t/2]}};
+    bst<kT,vT,cmp> tree{n};
+    
+    tree.insert(v[t/2]);
+
+    
+    
+    return n;
+}
+*/
+
+template<typename kT,typename vT, typename cmp>
+void bst<kT,vT,cmp>::balance(){
+    // build a vector of pairs
+    std::vector<std::pair<const kT,vT>> tmp;
+    // fill it
+    iterator it = begin();
+    std::pair<kT,vT> p;
+    while (it != end()){
+        p = {it->first,it->second};
+        tmp.push_back(p);
+        ++it;
+    }
+    // clear the tree
+    clear();
+    //rebuld the tree recursively
+    std::size_t size{tmp.size()};
+    rebuild_from_vector(tmp,0,size-1);
+
+    std::cout << head.get()->value.first << "," << head.get()->value.second << std::endl;
+}
+
+template<typename kT, typename vT, typename cmp>    
+void bst<kT,vT,cmp>::rebuild_from_vector(std::vector<bst<kT,vT,cmp>::pair_type> v, std::size_t from,std::size_t to){
+    
+    while (to-from >= 0) {
+        std::size_t t{(to+from)/2};
+
+        insert(v[t]);
+        rebuild_from_vector(v,from,t-1);
+        rebuild_from_vector(v,t+1,to);
+    }
+
+}
+
+
 
 #endif
