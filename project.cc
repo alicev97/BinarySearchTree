@@ -35,6 +35,9 @@ int main()
     // insert a left child of the right child. n4 points to it
     auto result3 = a.emplace(11, 13);
     nodo *n4 = n3->left.get();
+    nodo* n5;
+    nodo* n6;
+    nodo* n7;
 
 
     //try std::forward
@@ -142,6 +145,7 @@ int main()
    std::cout << it2 << std::endl;
    */
    //HAS RIGHT - IS LEFT
+   /*
    albero a4{15,12};
    a4.emplace(10,1);
    a4.emplace(13,54);
@@ -160,6 +164,50 @@ int main()
    std::cout << it2 << std::endl;
    it2.go_left();
    std::cout << it2 << std::endl;
- 
+   */
+
+  //// REMOVE TWO-CHILDREN NODE
+   albero a5{20,12};
+   a5.emplace(25,1);
+   a5.emplace(23,54);
+   a5.emplace(24,1);
+   a5.emplace(22,45);
+   a5.emplace(27,6);
+   a5.emplace(16,98);
+   
+   n1 = a5.get_head().get_pointer();
+   n2 = n1->right.get();
+   n3 = n2->left.get();
+   n4 = n3->left.get();
+   n5 = n3->right.get();
+   n6 = n2->right.get();
+   n7 = n1->left.get();
+   std::cout << *n1 << std::endl;
+   std::cout << *n2 << std::endl;
+   std::cout << *n3 << std::endl;
+   std::cout << *n4 << std::endl;
+   std::cout << *n5 << std::endl;
+   std::cout << *n6 << std::endl;
+   std::cout << *n7 << std::endl;
+    
+    std::cout << a5 << std::endl;
+
+   a5.erase(20);
+   
+   std::cout << a5 << std::endl;
+    /*
+   auto it2=a5.get_head();
+   std::cout << it2 << std::endl;
+   it2.go_right();
+   std::cout << it2 << std::endl;
+   it2.go_left();
+   std::cout << it2 << std::endl;
+   it2.go_right();
+   std::cout << it2 << std::endl;
+   it2.go_up();
+   it2.go_up();
+   it2.go_right();
+    std::cout << it2 << std::endl;
+*/
 
 }

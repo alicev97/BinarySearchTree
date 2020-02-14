@@ -345,13 +345,14 @@ void bst<kT,vT,cmp>::balance(){
 
 template<typename kT, typename vT, typename cmp>    
 void bst<kT,vT,cmp>::rebuild_from_vector(std::vector<bst<kT,vT,cmp>::pair_type> v, std::size_t from,std::size_t to){
-    
     if (to>=from){
         std::size_t t{(to+from)/2};
-        std::pair<iterator,bool> result = insert(v[t]);
+        insert(v[t]);
         if (!(to==from)){
-        rebuild_from_vector(v,from,t-1);
-        rebuild_from_vector(v,t+1,to);
+            if (t!=0){
+                rebuild_from_vector(v,from,t-1);
+            }
+            rebuild_from_vector(v,t+1,to);
         }
     }
 }
@@ -361,7 +362,7 @@ void bst<kT, vT, cmp>::copy_sub_bst(const bst<kT,vT,cmp>::node_type* b){
     if(b==nullptr){
         return;
     }
-    std::pair<iterator,bool> result = insert(pair_type (b->value.first, b->value.second));
+    insert(pair_type (b->value.first, b->value.second));
     copy_sub_bst(b->left.get());
     copy_sub_bst(b->right.get());
 }
@@ -375,18 +376,15 @@ void bst<kT,vT,cmp>::erase(const kT& x){
     if (it==end()){
         std::cout << "Key not found" << std::endl;
     } else {
-        std::cout << "I'm trying to erase " << it->first << ";"<< it->second << std::endl;
    
         if (it.is_leaf()){
         // if is leaf -> remove it
             if (it.is_left()){
                 it.go_up();
                 it.get_pointer()->left.reset();
-                std::cout << "erased left leaf" << std::endl;
             } else {
                 it.go_up();
                 it.get_pointer()->right.reset();
-                std::cout << "erased right leaf" << std::endl;
             }
         } else if (it.has_right() && it.has_left()) {
         // if it has 2 children -> create vector with pairs of all my children
@@ -394,10 +392,59 @@ void bst<kT,vT,cmp>::erase(const kT& x){
         //                      -> rebuild_from_vector (using a new tree) and use the head like a new node
         //                      -> head pointed by my parent
         //                      -> my parent becomes parent of the head
+
+        node_type* my_ptr = it.get_pointer();
+               
+        bst<kT,vT,cmp> tmp{};
+        tmp.copy_sub_bst(my_ptr);
+
+        std::vector<std::pair<const kT,vT>> v;
+        iterator it_tmp = tmp.begin();
+        std::pair<kT,vT> p;
+
+        while (it_tmp != tmp.end()){ // fill the vector with all sub-nodes but me
+            p = {it_tmp->first,it_tmp->second};
+            if (p.first != it->first) {
+                v.push_back(p);  
+            }
+            ++it_tmp;
+        }
+
+        tmp.clear();
+        tmp.rebuild_from_vector(v,0,v.size()-1);
+
+        if (it == get_head()){
+            tmp.head.swap(head);
+        } else {
+        node_type* parent_ptr = my_ptr->parent;
+        tmp.head->parent = parent_ptr;
+
+        if (it.is_left()){
+            parent_ptr->left.swap(tmp.head);
+        } else {
+            parent_ptr->right.swap(tmp.head);
+        }
+
+        my_ptr->parent=nullptr;
+        }
+
+        tmp.clear();
         
         } else {
         // if it has just one child -> my parent points my child instead of me
         //                          -> my child's parent is my parent
+        if (it == get_head()){
+            if (it.has_left()){
+                head.swap(it.get_pointer()->left);
+                head->parent->left.reset();
+            } else {
+                head.swap(it.get_pointer()->right);
+                head->parent->right.reset();
+            }
+            head->parent=nullptr;
+
+        } else {
+
             node_type* my_ptr = it.get_pointer();
             node_type* parent_ptr = my_ptr->parent;
                         
@@ -407,14 +454,12 @@ void bst<kT,vT,cmp>::erase(const kT& x){
                     parent_ptr->left.swap(my_ptr->left); //change left in parent
                     my_ptr->left.reset(); //delete the node
                     it.go_left();
-                    std::cout << "removed a left child with a left child" << std::endl;
                 } else { //has left - is right
                     it.go_up();
                     parent_ptr->right.swap(my_ptr->left);
                     //it.go_right();
                     my_ptr->left.reset();
                     it.go_right();
-                    std::cout << "removed a right child with a left child" << std::endl;
                 }
             } else {  // has right            
                 if (it.is_right()){ // has right - is right
@@ -422,16 +467,15 @@ void bst<kT,vT,cmp>::erase(const kT& x){
                     parent_ptr->right.swap(my_ptr->right);
                     my_ptr->right.reset();
                     it.go_right();
-                    std::cout << "removed a right child with a right child" << std::endl;
                 } else { // has right - is left
                     it.go_up();
                     parent_ptr->left.swap(my_ptr->right);
                     my_ptr->right.reset();
                     it.go_left();
-                    std::cout << "removed a left child with a right child" << std::endl;
                 }
             }
             it.get_pointer()->parent=parent_ptr; // change parent in child
+        }
         }
     }
 }
