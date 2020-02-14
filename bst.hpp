@@ -112,9 +112,10 @@ template<typename OT>
 std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(OT&& x){
     
     if(head == nullptr){
-        head = std::make_unique<node_type>(x);
+        node_type* n{new node_type{x}};
+        head.reset(n);
         iterator it {head.get()};
-        std::pair<iterator,bool> result(it,false);
+        std::pair<iterator,bool> result(it,true);
         return result;
     }
     //find my parent
@@ -144,7 +145,7 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
     if(head == nullptr){
         head.reset(new_node);
         iterator it {head.get()};
-        std::pair<iterator,bool> result(it,false);
+        std::pair<iterator,bool> result(it,true);
         return result;
     }
 
@@ -167,24 +168,32 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
 
 template<typename kT, typename vT, typename cmp>
 void bst<kT, vT, cmp>::clear(){
+    //iterator to head
     iterator it{head.get()};
-    while(head != nullptr){
-    while (!it.is_leaf()){
+
+    while(head != nullptr){ //while i've not cleaned head
+
+    while (!it.is_leaf()){ // while i'm not a leaf node
+
     while (it.has_left()){
         it.go_left();
     }
     while(it.has_right()){
         it.go_right();
     }
+
     }
     if(it.get_pointer() != head.get()){
         it.go_up();
         if (it.has_left()){
+            it.get_pointer()->left.reset();
             it.get_pointer()->left.release();
         } else{
             it.get_pointer()->right.reset();
+            it.get_pointer()->right.release();
         }
     } else{
+        head.reset();
         head.release();
     }
 
@@ -303,17 +312,21 @@ void bst<kT,vT,cmp>::balance(){
     // fill it
     iterator it = begin();
     std::pair<kT,vT> p;
+    
     while (it != end()){
         p = {it->first,it->second};
         tmp.push_back(p);
         ++it;
     }
+    
     // clear the tree
     clear();
+
     //rebuld the tree recursively
     std::size_t size{tmp.size()};
+    
     rebuild_from_vector(tmp,0,size-1);
-
+    
 }
 
 template<typename kT, typename vT, typename cmp>    
@@ -321,11 +334,80 @@ void bst<kT,vT,cmp>::rebuild_from_vector(std::vector<bst<kT,vT,cmp>::pair_type> 
     
     if (to>=from){
         std::size_t t{(to+from)/2};
-
-        insert(v[t]);
+        std::pair<iterator,bool> result = insert(v[t]);
         if (!(to==from)){
         rebuild_from_vector(v,from,t-1);
         rebuild_from_vector(v,t+1,to);
+        }
+    }
+}
+
+template<typename kT, typename vT, typename cmp>
+void bst<kT,vT,cmp>::erase(const kT& x){
+
+    //find  the element with that key
+    auto it = find(x);
+
+    if (it==end()){
+        std::cout << "Key not found" << std::endl;
+    } else {
+        std::cout << "I'm trying to erase " << it->first << ";"<< it->second << std::endl;
+   
+        if (it.is_leaf()){
+        // if is leaf -> remove it
+            if (it.is_left()){
+                it.go_up();
+                it.get_pointer()->left.reset();
+                std::cout << "erased left leaf" << std::endl;
+            } else {
+                it.go_up();
+                it.get_pointer()->right.reset();
+                std::cout << "erased right leaf" << std::endl;
+            }
+        } else if (it.has_right() && it.has_left()) {
+        // if it has 2 children -> create vector with pairs of all my children
+        //                      -> remove my pair 
+        //                      -> rebuild_from_vector (using a new tree) and use the head like a new node
+        //                      -> head pointed by my parent
+        //                      -> my parent becomes parent of the head
+        
+        } else {
+        // if it has just one child -> my parent points my child instead of me
+        //                          -> my child's parent is my parent
+            node_type* my_ptr = it.get_pointer();
+            node_type* parent_ptr = my_ptr->parent;
+                        
+            if (it.has_left()) { //has left
+                if (it.is_left()){ // has left - is left
+                    it.go_up();
+                    parent_ptr->left.swap(my_ptr->left); //change left in parent
+                    my_ptr->left.reset(); //delete the node
+                    it.go_left();
+                    std::cout << "removed a left child with a left child" << std::endl;
+                } else { //has left - is right
+                    it.go_up();
+                    parent_ptr->right.swap(my_ptr->left);
+                    //it.go_right();
+                    my_ptr->left.reset();
+                    it.go_right();
+                    std::cout << "removed a right child with a left child" << std::endl;
+                }
+            } else {  // has right            
+                if (it.is_right()){ // has right - is right
+                    it.go_up();
+                    parent_ptr->right.swap(my_ptr->right);
+                    my_ptr->right.reset();
+                    it.go_right();
+                    std::cout << "removed a right child with a right child" << std::endl;
+                } else { // has right - is left
+                    it.go_up();
+                    parent_ptr->left.swap(my_ptr->right);
+                    my_ptr->right.reset();
+                    it.go_left();
+                    std::cout << "removed a left child with a right child" << std::endl;
+                }
+            }
+            it.get_pointer()->parent=parent_ptr; // change parent in child
         }
     }
 }

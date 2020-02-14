@@ -19,7 +19,7 @@ public:
     //ctor
     _iterator() noexcept : current(nullptr) {}
     explicit _iterator(node_type* x) noexcept : current{x} {}
-    //explicit _iterator(const _iterator it): current{it.get_pointer()} {}
+    //explicit _iterator(const _iterator& it): current{it.get_pointer()} {}
 
     //destructor
     ~_iterator() noexcept = default;
@@ -104,6 +104,25 @@ public:
    
    node_type* get_pointer(){return current;}
 
+   bool is_left(){
+       _iterator it2 = *this;
+       it2.go_up();
+       it2.go_left();
+       if (it2==*this){ return true; } else { return false; }
+   }
+
+   bool is_right(){
+       _iterator it2 = *this;
+       it2.go_up();
+       it2.go_right();
+       if (it2==*this){ return true; } else {return false;}
+   }
+
+    friend
+    std::ostream& operator<<(std::ostream& os, const _iterator& n){
+        os << n->first << ";" << n->second;
+        return os;
+    }
 };
 
 #endif

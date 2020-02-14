@@ -32,7 +32,7 @@ struct Node{
     // move ctor
     Node(Node&& n) noexcept = default;
     // move assignment
-    Node& operator=(Node&& n) noexcept = default; // do not work bc of the const int
+    Node& operator=(Node&& n) = default; // do not work bc of the const int, this is why it's not noexcept
     //copy assignment
     Node& operator=(const Node& n); // to be implemented (do not work bc of move assignement)
 
@@ -52,20 +52,6 @@ struct Node{
         parent=p;
     }
 
-    // add child
-    //void add_right(const T& x){ right.reset(new Node(x,this)); }
-    //void add_left(const T& x){ left.reset(new Node(x,this)); }
-
-
-    // check key
-    bool key_equality(Node* p){
-        if(p->value.first == value.first){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     Node* add_child(Node* x){
         if (x->value.first > value.first){
             right.reset(x);
@@ -77,7 +63,6 @@ struct Node{
             return left.get();
         }
     }
-
 
 };
 
