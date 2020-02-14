@@ -29,8 +29,21 @@ public:
     explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {}
 
     // copy semantic
-
+     bst(const bst &b): op{b.op} {
+        iterator it{b.head.get()};
+        node_type* n{new node_type{pair_type (it->first, it->second)}};
+        head.reset(n);
+        copy_sub_bst(b.head.get());
+     }
+    bst& operator=(const bst& b){
+        head.reset();
+        auto tmp = b;
+        (*this) = std::move(tmp);
+    }
+    
     // move semantic
+    bst(bst&& b) noexcept = default;
+    bst& operator=(bst&& b) noexcept = default;
 
     //iterators
     using iterator = _iterator<node_type,pair_type>;
@@ -103,6 +116,7 @@ public:
     iterator get_new_parent(pair_type x);
 
     void rebuild_from_vector(std::vector<pair_type> v, std::size_t from,std::size_t to);
+    void copy_sub_bst(const node_type* b);
 
 };
 
@@ -340,6 +354,16 @@ void bst<kT,vT,cmp>::rebuild_from_vector(std::vector<bst<kT,vT,cmp>::pair_type> 
         rebuild_from_vector(v,t+1,to);
         }
     }
+}
+
+template<typename kT, typename vT, typename cmp>
+void bst<kT, vT, cmp>::copy_sub_bst(const bst<kT,vT,cmp>::node_type* b){
+    if(b==nullptr){
+        return;
+    }
+    std::pair<iterator,bool> result = insert(pair_type (b->value.first, b->value.second));
+    copy_sub_bst(b->left.get());
+    copy_sub_bst(b->right.get());
 }
 
 template<typename kT, typename vT, typename cmp>
