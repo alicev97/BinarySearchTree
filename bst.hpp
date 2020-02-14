@@ -39,6 +39,7 @@ public:
         head.reset();
         auto tmp = b;
         (*this) = std::move(tmp);
+        return *this;
     }
     
     // move semantic
@@ -138,8 +139,8 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(OT&& x)
 
 
     if (!op(x.first, p->first) && !op(p->first,x.first)){
-        parent->value.second = x.second;
-
+        //parent->value.second = x.second;
+        std::cout << "The key already exists" << std::endl;
         std::pair<iterator,bool> result(p,false);
         return result;
     } else {
@@ -167,10 +168,10 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
     node_type* parent = p.get_pointer();
 
     if (!op(new_node->value.first, parent->value.first) && !op(parent->value.first, new_node->value.first)){
-        parent->value.second = new_node->value.second;
+        //parent->value.second = new_node->value.second;
 
         std::pair<iterator,bool> result(p,false);
-        std::cout << "modified an existent node" << std::endl;
+        std::cout << "The key already exists" << std::endl;
         delete new_node;
         return result;
     } else {
