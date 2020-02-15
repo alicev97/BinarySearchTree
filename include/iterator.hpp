@@ -19,7 +19,6 @@ public:
     //ctor
     _iterator() noexcept : current(nullptr) {}
     explicit _iterator(node_type* x) noexcept : current{x} {}
-    //explicit _iterator(const _iterator& it): current{it.get_pointer()} {}
 
     //destructor
     ~_iterator() noexcept = default;
@@ -36,7 +35,9 @@ public:
 
    //returns a new iterator (class reference)
     _iterator& operator++() noexcept {
-        
+        if (current == nullptr) // check nullptr
+            return *this;
+
         if (current->right != nullptr){
             (*this).go_right();
             while(current->left != nullptr){
@@ -74,32 +75,38 @@ public:
     return !(a == b);
     }
 
-    void go_left(){current=current->left.get();}
-    void go_right(){current=current->right.get();}
-    void go_up(){current = current->parent;}
+    void go_left(){if(current != nullptr){current=current->left.get();}}
+    void go_right(){if(current != nullptr){current=current->right.get();}}
+    void go_up(){if(current != nullptr){current = current->parent;}}
 
     bool is_leaf(){
+        if(current != nullptr){
         if (current->left.get()==nullptr && current->right.get()==nullptr){
             return true;
         } else {
             return false;
         }
+        } else {return false;}
     }
 
     bool has_left(){
+        if(current != nullptr){
         if (current->left.get() != nullptr){
             return true;
         } else{
             return false;
         }
+        } else {return false;}
     }
 
     bool has_right(){
+        if(current != nullptr){
         if (current->right.get() != nullptr){
             return true;
         } else {
             return false;
         }
+        } else {return false;}
     }
    
    node_type* get_pointer(){return current;}
@@ -119,8 +126,8 @@ public:
    }
 
     friend
-    std::ostream& operator<<(std::ostream& os, const _iterator& n){
-        os << n->first << ";" << n->second;
+    std::ostream& operator<<(std::ostream& os, const _iterator& it){
+        os << it->first << ";" << it->second;
         return os;
     }
 };

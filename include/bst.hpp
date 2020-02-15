@@ -17,28 +17,30 @@ class bst{
     using pair_type = std::pair<const kT, vT>;
 
     //variables
-    std::unique_ptr<node_type> head=NULL;
+    std::unique_ptr<node_type> head= nullptr;
     cmp op;
 
 public:
-    //ctors and destructor
-    bst() = default;
-    ~bst() noexcept = default;
-    //ctom ctor with key and value, calls the node ctor
-    explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{}
-    explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {}
+    //ctors and dtor
+    bst() = default; // default ctor
+    ~bst() noexcept = default; // default dtor
+    explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{} //ctom ctor (key, value) -> calls the node ctor
+    explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {} //ctom ctor (key, value, op)
 
     // copy semantic
      bst(const bst &b): op{b.op} {
         iterator it{b.head.get()};
+        if (it==end()) // if head is nullptr
+            return;
         node_type* n{new node_type{pair_type (it->first, it->second)}};
         head.reset(n);
-        copy_sub_bst(b.head.get());
+        copy_sub_bst(b.head.get()->left.get());
+        copy_sub_bst(b.head.get()->right.get());
      }
     bst& operator=(const bst& b){
         head.reset();
-        auto tmp = b;
-        (*this) = std::move(tmp);
+        auto tmp = b; // coupy ctor
+        (*this) = std::move(tmp); // move assignment
         return *this;
     }
     
@@ -51,8 +53,8 @@ public:
     using const_iterator = _iterator<node_type, const pair_type>;
     
     // functions
+
     // insert
-    //std::pair<iterator,bool> insert(const pair_type& x);
     template<typename OT>
     std::pair<iterator,bool> insert(OT&& x);
 
@@ -66,6 +68,11 @@ public:
     // begin
     iterator begin(){
         iterator tmp{head.get()};
+
+        if(tmp == end()){ // nullptr
+            return tmp;
+        }
+
         while(tmp.get_pointer()->left.get() != nullptr){
             tmp.go_left();
         }
@@ -74,6 +81,11 @@ public:
 
     const_iterator begin() const{
         const_iterator tmp{head.get()};
+
+       if(tmp == end()){ // nullptr
+            return tmp;
+        }
+
         while(tmp.get_pointer()->left.get() != nullptr){
             tmp.go_left();
         }
@@ -82,6 +94,11 @@ public:
 
     const_iterator cbegin() const{
         const_iterator tmp{head.get()};
+
+        if(tmp == end()){ // nullptr
+            return tmp;
+        }
+
         while(tmp.get_pointer()->left.get() != nullptr){
             tmp.go_left();
         }
@@ -190,24 +207,24 @@ void bst<kT, vT, cmp>::clear(){
 
     while (!it.is_leaf()){ // while i'm not a leaf node
 
-    while (it.has_left()){
+    while (it.has_left()){ // go hard left
         it.go_left();
     }
-    while(it.has_right()){
+    while(it.has_right()){ // go hard right
         it.go_right();
     }
 
     }
     if(it.get_pointer() != head.get()){
         it.go_up();
-        if (it.has_left()){
+        if (it.has_left()){ // if I was the left child
             it.get_pointer()->left.reset();
             it.get_pointer()->left.release();
-        } else{
+        } else{ // if I was the right child
             it.get_pointer()->right.reset();
             it.get_pointer()->right.release();
         }
-    } else{
+    } else{ // if I am the head
         head.reset();
         head.release();
     }
@@ -220,47 +237,56 @@ template<typename kT, typename vT, typename cmp>
 typename bst<kT,vT,cmp>::iterator bst<kT, vT, cmp>::find(const kT& x) {
 
     iterator tmp{head.get()};
-    while (op(x, tmp->first) || op(tmp->first, x) || !tmp.is_leaf()){
-    if (op(x, tmp->first)){
-        if (tmp.has_left()){
+
+    if(tmp == end()) // if head nullptr
+        return tmp;
+
+    while (op(x, tmp->first) || op(tmp->first, x) || !tmp.is_leaf()){ // while  I've find the value or I'm at a leaf
+    if (op(x, tmp->first)){ // if <
+        if (tmp.has_left()){ // if there is a left child (< value)
             tmp.go_left();
-        } else { break;}
-    } else if (op(tmp->first, x)){
-
-        if (tmp.has_right()){
+        } else { break;} // otherwise the value is not present
+    } else if (op(tmp->first, x)){ // if >
+        if (tmp.has_right()){ // if there is a right child (> value)
         tmp.go_right();
-        } else {break;}
+        } else {break;} // otherwise the value is not present
     } else {
-        break;
+        break; // if ==
     }
     }
 
-    if (!op(x, tmp->first) && !op(tmp->first, x)){
+    // check why exit form the while
+    if (!op(x, tmp->first) && !op(tmp->first, x)){ // if ==
     return tmp;
-    } else{return end();}
+    } else{return end();} // not found
 }
 
 
 template<typename kT, typename vT, typename cmp>
 typename bst<kT, vT, cmp>::const_iterator bst<kT, vT, cmp>::find(const kT& x) const{
     const_iterator tmp{head.get()};
-    while (op(x, tmp->first) || op(tmp->first, x) || !tmp.is_leaf()){
-    if (op(x, tmp->first)){
-        if (tmp.has_left()){
-            tmp.go_left();
-        } else { break;}
-    } else if (op(tmp->first, x)){
+    
+    if(tmp == end()) // if head nullptr
+        return tmp;
 
-        if (tmp.has_right()){
+    while (op(x, tmp->first) || op(tmp->first, x) || !tmp.is_leaf()){ // while  I've find the value or I'm at a leaf
+    if (op(x, tmp->first)){ // if <
+        if (tmp.has_left()){ // if there is a left child (< value)
+            tmp.go_left();
+        } else { break;} // otherwise the value is not present
+    } else if (op(tmp->first, x)){ // if >
+        if (tmp.has_right()){ // if there is a right child (> value)
         tmp.go_right();
-        } else {break;}
-    } else {
+        } else {break;} // otherwise the value is not present
+    } else { // if ==
         break;
     }
     }
-    if (!op(x, tmp->first) && !op(tmp->first, x)){
+    
+    // check why exit form the while
+    if (!op(x, tmp->first) && !op(tmp->first, x)){ // if ==
     return tmp;
-    } else{return end();}
+    } else{return end();} // not found
 }
 
 template<typename kT, typename vT, typename cmp>
@@ -307,10 +333,10 @@ template<typename kT, typename vT, typename cmp>
 template<typename OT>
 vT& bst<kT,vT,cmp>::operator[](OT&& x){
 
-    pair_type p{x,vT{}};
     auto it = find(x);//returns an iterator to the element or an iterator pointing end
     
     if (it == end()){
+        pair_type p{x,vT{}};
         std::pair<iterator,bool> result = insert(p);
         return result.first->second;
     } else {
@@ -322,10 +348,13 @@ vT& bst<kT,vT,cmp>::operator[](OT&& x){
 
 template<typename kT,typename vT, typename cmp>
 void bst<kT,vT,cmp>::balance(){
+    
+    iterator it = begin();
+    if (it == end()) // empty tree
+        return;
     // build a vector of pairs
     std::vector<std::pair<const kT,vT>> tmp;
     // fill it
-    iterator it = begin();
     std::pair<kT,vT> p;
     
     while (it != end()){
@@ -339,33 +368,33 @@ void bst<kT,vT,cmp>::balance(){
 
     //rebuld the tree recursively
     std::size_t size{tmp.size()};
-    
     rebuild_from_vector(tmp,0,size-1);
     
 }
 
 template<typename kT, typename vT, typename cmp>    
 void bst<kT,vT,cmp>::rebuild_from_vector(std::vector<bst<kT,vT,cmp>::pair_type> v, std::size_t from,std::size_t to){
-    if (to>=from){
-        std::size_t t{(to+from)/2};
-        insert(v[t]);
-        if (!(to==from)){
-            if (t!=0){
-                rebuild_from_vector(v,from,t-1);
-            }
-            rebuild_from_vector(v,t+1,to);
+    if (to<from)
+        return; // stop condition
+
+    std::size_t t{(to+from)/2};
+    insert(v[t]);
+    if (to!=from){
+        if (t!=0){
+            rebuild_from_vector(v,from,t-1);
         }
+        rebuild_from_vector(v,t+1,to);
     }
 }
 
 template<typename kT, typename vT, typename cmp>
 void bst<kT, vT, cmp>::copy_sub_bst(const bst<kT,vT,cmp>::node_type* b){
-    if(b==nullptr){
-        return;
-    }
-    insert(pair_type (b->value.first, b->value.second));
-    copy_sub_bst(b->left.get());
-    copy_sub_bst(b->right.get());
+    if(b==nullptr) // stop condition
+        return; 
+
+    insert(pair_type (b->value.first, b->value.second)); // insert the node
+    copy_sub_bst(b->left.get()); // recursion
+    copy_sub_bst(b->right.get()); // recursion
 }
 
 template<typename kT, typename vT, typename cmp>

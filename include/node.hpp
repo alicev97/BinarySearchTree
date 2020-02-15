@@ -15,26 +15,28 @@ template <typename T>
 struct Node{
     //variables
     T value;
-    std::unique_ptr<Node> left=NULL;
-    std::unique_ptr<Node> right=NULL;
-    Node* parent;
+    std::unique_ptr<Node> left = nullptr;
+    std::unique_ptr<Node> right = nullptr;
+    Node* parent = nullptr;
     
     using pair_type = T;
 
     //ctors and destructor
-    Node() noexcept = default;
-    explicit Node(T pair): value{pair}, left{nullptr},right{nullptr},parent{nullptr} {}
-    explicit Node(T pair, Node* p): value{pair}, parent{p} {}
-    ~Node() noexcept = default;
+    Node() noexcept {}; // default ctor
+    explicit Node(T pair): value{pair} {} // custom ctor 1
+    explicit Node(T pair, Node* p): value{pair}, parent{p} {} // custom ctor 2
+    ~Node() noexcept = default; //dtor
 
-    // copy ctor (just create a node with the same pair?)
-    Node(const Node& n): value{n.value} {};
-    // move ctor
-    Node(Node&& n) noexcept = default;
-    // move assignment
-    Node& operator=(Node&& n) = default; // do not work bc of the const int, this is why it's not noexcept
-    //copy assignment
-    Node& operator=(const Node& n); // to be implemented (do not work bc of move assignement)
+    // move semantic
+    Node(Node&& n) noexcept = default; // move ctor
+    Node& operator=(Node&& n) = default; // move assignment 
+    // copy semantic
+    Node(const Node& n): value{n.value} {}; // copy ctor
+    Node& operator=(const Node& n){ // copy assignment
+        auto tmp = n;
+        (*this) = std::move(tmp); // qua chiama il copy assignemnt e non il move!! ???
+        return *this;
+    }
 
     //put-to overloading
     friend
@@ -47,19 +49,21 @@ struct Node{
         return os;
     }
 
+    // eliminare (non testata) 
+    /*
     // change parent pointer
     void set_parent(Node* p){
         parent=p;
     }
-
+    */
     Node* add_child(Node* x){
         if (x->value.first > value.first){
             right.reset(x);
-            x->set_parent(this);
+            x->parent=this;
             return right.get();
         } else {
             left.reset(x);
-            (*x).set_parent(this);
+            x->parent=this;
             return left.get();
         }
     }

@@ -1,0 +1,49 @@
+// NODE
+
+Node() noexcept = default; non funziona! dice "‘Node<T>::Node() noexcept [with T = std::pair<const int, int>]’ is implicitly deleted because its exception-specification does not match the implicit exception-specification ‘’"
+-> ho messo left, right, e parent a nullptr di default e cambiato il default ctor in Node() noexcept {};
+così dovrebbe chiamare i costruttori di default di tutti i membri?
+
+rimossosso nullptr da custom ctor 1 (già inizializzati su a nullptr)
+
+copy assignment si chiama da solo! Non chiama il move assignment! NON VAA
+
+il move assignment funziona anche con const int??? ma viene chiamato?
+
+test add_child(): memory leak se non delete p1 nel main
+
+
+// BST
+
+op ha come default std::less<kT>?
+
+come testare il ctor con op??
+
+copy ctor: modificato copy_sub_bst(b.head.get()); con copy_sub_bst(b.head.get()->left.get()); e copy_sub_bst(b.head.get()->right.get()); altrimenti chiamava insert sulla head di nuovo! e aggiunto il check se l'albero è nullptr
+
+modifiche a begin() (tutte tre le versioni)-> caso albero nullo!
+come testate begin() che torna const_iteratore? (stesso comportamento di find) ma nelle funzioni viene chiamato e funziona!
+
+modifiche a find() -> caso albero nullo!
+
+get_new_parent() se inserisco una chiave che c'è gia non controlla (torna il nodo con la stessa chiave), ok perchè controllo quando la chiamo? e se lo chiamo su un albero nullo? (segmentation fault)
+
+[] -> spostata l'inizializzazione di p dentro l'if
+
+balance() -> caso albero nullo! + qualche modifica sugli if
+
+copy_sub_bst() -> se copi da un albero con nodi a un albero vuoto non succede niente. è quello che vogliamo?
+
+erase() -> non l'ho testata ahah
+
+// ITERATOR
+
+* -> danno segmentation fault se it a nullptr
+
+++ -> aggiunto nullptr check
+
+go_left(), go_right(), go_up(), is_leaf(), has_right(), has_left() -> aggiunto check nullptr
+
+is_left(), is_right() mancano alcuni check()
+
+non si può stampare un iteratore che punta ad albero nullo
