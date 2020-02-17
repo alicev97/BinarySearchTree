@@ -50,10 +50,30 @@ To compile our code we've written a Makefile so just typing make we will get all
 
   In the last case we will rebuild a tree with all nodes of the sub-tree with head the node to be erased but it and then replace the old sub-tree with the new one. This is done by calling the $\textit{rebuild_from_vector}$ function explained in balance.
 
-- ##### operators [] and <<
+- ##### clear
+
+  this function removes all the nodes of a tree by resetting the head. Given that the head is a unique pointer, by resetting it the node managed by it will be destroyed and so the unique pointers pointing to the children will be reset too. In this way each node will be deleted.
+
+- ##### find
+
+  the two versions of this function differ in the returned type and, in addiction, the second one is a constant function (that is to say that it does not change the member variables of the class). Both the functions compare the input value with the key value of a nodes and, according with the result of that comparison, they continue going to the left child or to the right child until the value is found or a leaf node is reached. In order to browse the tree some useful function of the class iterator are used.
+
+- ##### operator <<
+
+  it allows you to print the key value of every node in the tree starting from the smallest up to the highest.
+
+- ##### operator []
+
+  it calls the function $\textit{find}$ looking for the node with a given key and returns a reference to the value associated with that key if it's present. If not, a new node is inserted into the tree and the associated value is set to the default value.
 
 - ##### balance
 
-- ##### clear
+  this function balance an existing tree by copying all the pairs(key, value) into a vector in ascending order according with the value of the keys, cleaning the tree itself and then rebuilding it by calling $\textit{rebuild_from_vector}$. This one is a recursive function that, given a vector, a starting point and an end point, calls the $\textit{insert}$ on the midpoint and then call itself two times: one on the elements of the vector before the midpoint and one on the element after it.
 
-- 
+- ##### begin
+
+  there are three different version of the $\textit{begin}$ function: the first returns an iterator while the second and the third are constant functions and return a constant iterator. Each one of them moves the iterator to the node with the smallest key, that is the hard left one.
+
+- ##### end
+
+  there are three different version of the $\textit{end}$ function: the first returns an iterator while the second and the third are constant functions and return a constant iterator. Each one of them initializes the iterator to the null pointer.
