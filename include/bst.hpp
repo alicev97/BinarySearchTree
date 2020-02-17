@@ -24,21 +24,15 @@ public:
     bst() = default; // default ctor
     ~bst() noexcept = default; // default dtor
     explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{} //ctom ctor (key, value) -> calls the node ctor
-    explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {} //ctom ctor (key, value, op)
+    explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {
+        std::cout << "with operator" << std::endl;
+    } //ctom ctor (key, value, op)
 
-    // copy semantic
-     bst(const bst &b): op{b.op} {
-        iterator it{b.head.get()};
-        if (it==end()) // if head is nullptr
-            return;
-        node_type* n{new node_type{pair_type (it->first, it->second)}};
-        head.reset(n);
-        copy_sub_bst(b.head.get()->left.get());
-        copy_sub_bst(b.head.get()->right.get());
-     }
+    bst(const bst &b) {head = std::make_unique<node_type>(b.head);}
+
     bst& operator=(const bst& b){
         head.reset();
-        auto tmp = b; // coupy ctor
+        auto tmp = b; // copy ctor
         (*this) = std::move(tmp); // move assignment
         return *this;
     }

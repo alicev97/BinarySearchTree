@@ -22,11 +22,21 @@ struct Node{
     Node() noexcept {}; // default ctor
     explicit Node(T pair): value{pair} {} // custom ctor 1
     explicit Node(T pair, Node* p): value{pair}, parent{p} {} // custom ctor 2
+    explicit Node(const std::unique_ptr<Node>& n): value{n->value} {
+        this->parent=n->parent;
+        if (n->left){
+            left = std::make_unique<Node>(n->left);
+        }
+        if (n->right){
+            right = std::make_unique<Node>(n->right);
+        }
+    }
     ~Node() noexcept = default; //dtor
 
     // move semantic
     Node(Node&& n) noexcept = default; // move ctor
     Node& operator=(Node&& n) = default; // move assignment 
+    
     // copy semantic
     Node(const Node& n): value{n.value} {}; // copy ctor
     Node& operator=(const Node& n){ // copy assignment
@@ -38,17 +48,17 @@ struct Node{
     //put-to overloading
     friend
     std::ostream& operator<<(std::ostream& os, const Node& n) {
-        os << "key = " << n.value.first << std::endl;
-        os << "value = " << n.value.second << std::endl;
         os << "my address:  " << &n << std::endl;
-        os << "pointers: \nparent: " << n.parent << std::endl;
-        os << "right child: " << n.right.get() << "\nleft chid: " << n.left.get()<< std::endl;
+        os << n.value.first << ";" << n.value.second << std::endl;
+        os << "parent: "  << n.parent << std::endl;
+        os << "right: " << n.right.get() << "\nleft: " << n.left.get()<< std::endl;
         return os;
     }
 
-    Node* add_child(Node* x) noexcept {
+    template<typename cmp>
+    Node* add_child(Node* x, cmp op) noexcept {
         // if x is a right child
-        if (x->value.first > value.first){
+        if (!op(x->value.first,value.first)){ //>
             right.reset(x);
             x->parent=this;
             return right.get();

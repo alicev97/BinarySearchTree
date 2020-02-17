@@ -30,7 +30,7 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::insert(OT&& x)
         return result;
     } else {
     // otherwise call node function add_child
-        iterator it{parent->add_child(n)};
+        iterator it{parent->add_child(n,op)};
         std::pair<iterator,bool> result(it,true);
         return result;
     }
@@ -63,7 +63,7 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
         return result;
     } else {
     //otherwise call the node function add_child
-        iterator it{parent->add_child(new_node)};
+        iterator it{parent->add_child(new_node,op)};
         std::pair<iterator,bool> result(it,true);
         return result;
     }   
@@ -106,7 +106,6 @@ void bst<kT, vT, cmp>::clear(){
 
 template<typename kT, typename vT, typename cmp>
 typename bst<kT,vT,cmp>::iterator bst<kT, vT, cmp>::find(const kT& x) {
-
     iterator tmp{head.get()};
 
     if(tmp == end()) // if head nullptr
@@ -200,7 +199,6 @@ std::ostream& operator<<(std::ostream& os, const bst<KT,VT,CMP>& x) {
         os << it->first << " ";
         ++it;
     }
-    os << std::endl;
     return os;
 }
 
@@ -281,10 +279,12 @@ void bst<kT, vT, cmp>::copy_sub_bst(const bst<kT,vT,cmp>::node_type* b){
 
     if(b==nullptr)// stop condition
         return;
-
-    copy_sub_bst(b->left.get()); // recursion
-    copy_sub_bst(b->right.get()); // recursion
+    if (b->left.get()!=nullptr)
+        copy_sub_bst(b->left.get()); // recursion
+    if (b->right.get()!=nullptr)
+        copy_sub_bst(b->right.get()); // recursion
 }
+
 
 template<typename kT, typename vT, typename cmp>
 void bst<kT,vT,cmp>::erase(const kT& x){
@@ -318,16 +318,15 @@ void bst<kT,vT,cmp>::erase(const kT& x){
                                 -> link my parent with the head of the new tree
                                 -> remove the old sub-tree
         */
-
         node_type* my_ptr = it.get_pointer();
                
         bst<kT,vT,cmp> tmp{};
         tmp.copy_sub_bst(my_ptr);
-
+        
         std::vector<std::pair<const kT,vT>> v;
         iterator it_tmp = tmp.begin();
         std::pair<kT,vT> p;
-
+       
         // fill the vector with all sub-nodes but me
         while (it_tmp != tmp.end()){ 
             p = {it_tmp->first,it_tmp->second};
@@ -339,7 +338,7 @@ void bst<kT,vT,cmp>::erase(const kT& x){
 
         tmp.clear();
         tmp.rebuild_from_vector(v,0,v.size()-1);
-
+        
         // if I'm trying to remove the root I just need to swap tree heads 
         if (it == get_head()){
             tmp.head.swap(head);
