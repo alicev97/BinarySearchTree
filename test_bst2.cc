@@ -71,6 +71,7 @@ int main(){
     45
 
     */
+   
     std::cout << "\n\nUnbalanced tree:\n" << std::endl;
     using iteratore = albero::iterator; 
     iteratore it = c.get_head();
@@ -94,6 +95,7 @@ int main(){
         66      99
 
     */
+   
     std::cout << "\nBalanced tree:\n" << std::endl;
     iteratore it2 = c.get_head();
     std::cout << *(it2.get_pointer()) << std::endl;
@@ -126,5 +128,6 @@ int main(){
     std::cerr << "Unknown exception" << std::endl;
     return 2;
     }
+    
 
 }

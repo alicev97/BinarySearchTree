@@ -71,6 +71,8 @@ std::pair<typename bst<kT,vT,cmp>::iterator,bool> bst<kT,vT,cmp>::emplace(Types&
 
 template<typename kT, typename vT, typename cmp>
 void bst<kT, vT, cmp>::clear(){
+    head.reset(nullptr);
+    /*
     //iterator to head
     iterator it{head.get()};
 
@@ -101,6 +103,7 @@ void bst<kT, vT, cmp>::clear(){
     }
 
     }
+    */
 }
 
 
