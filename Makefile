@@ -11,9 +11,10 @@ all: $(EXE)
 $(EXE): project.o 
 	$(CXX) $^ -o $(EXE)
 
-project.o: include/bst.hpp include/node.hpp include/iterator.hpp
+project.o: include/bst.hpp include/node.hpp include/iterator.hpp include/bits_bst.hpp
 
-format: $(SRC) include/bst.hpp include/node.hpp include/iterator.hpp
+
+format: $(SRC) include/bst.hpp include/node.hpp include/iterator.hpp include/bits_bst.hpp
 	@clang-format -i $^ 2>/dev/null || echo "Please install clang-format to run this commands"
 
 clean:

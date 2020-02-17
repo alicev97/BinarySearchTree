@@ -1,4 +1,3 @@
-//node
 #ifndef __node_hpp__
 #define __node_hpp__
 
@@ -8,18 +7,16 @@
 #include <iterator>
 #include <memory>
 #include <vector>
-#include "bst.hpp"
-#include "iterator.hpp"
 
 template <typename T>
 struct Node{
     //variables
     T value;
+
     std::unique_ptr<Node> left = nullptr;
     std::unique_ptr<Node> right = nullptr;
     Node* parent = nullptr;
-    
-    using pair_type = T;
+
 
     //ctors and destructor
     Node() noexcept {}; // default ctor
@@ -40,7 +37,7 @@ struct Node{
 
     //put-to overloading
     friend
-    std::ostream& operator<<(std::ostream& os, const Node& n){
+    std::ostream& operator<<(std::ostream& os, const Node& n) {
         os << "key = " << n.value.first << std::endl;
         os << "value = " << n.value.second << std::endl;
         os << "my address:  " << &n << std::endl;
@@ -49,19 +46,14 @@ struct Node{
         return os;
     }
 
-    // eliminare (non testata) 
-    /*
-    // change parent pointer
-    void set_parent(Node* p){
-        parent=p;
-    }
-    */
-    Node* add_child(Node* x){
+    Node* add_child(Node* x) noexcept {
+        // if x is a right child
         if (x->value.first > value.first){
             right.reset(x);
             x->parent=this;
             return right.get();
         } else {
+        // if x is a left child
             left.reset(x);
             x->parent=this;
             return left.get();

@@ -1,4 +1,3 @@
-//iterator
 #ifndef __iterator_hpp__
 #define __iterator_hpp__
 
@@ -8,15 +7,15 @@
 #include <iterator>
 #include <memory>
 #include <vector>
-#include "bst.hpp"
 #include "node.hpp"
 
 template<typename node_type,typename O>
 class _iterator{
+
     node_type* current;
 
 public:
-    //ctor
+    //ctors
     _iterator() noexcept : current(nullptr) {}
     explicit _iterator(node_type* x) noexcept : current{x} {}
 
@@ -29,11 +28,10 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type = std::ptrdiff_t;
 
-    // OVERLOADING
+    // OVERLOADING OPERATORS
     reference operator*() const noexcept { return current->value;}
     pointer operator->() const noexcept { return &(*(*this)); } 
 
-   //returns a new iterator (class reference)
     _iterator& operator++() noexcept {
         if (current == nullptr) // check nullptr
             return *this;
@@ -67,10 +65,12 @@ public:
         _iterator tmp{current};
         ++(*this);
         return tmp;
-  }
+    }
+
     friend bool operator==(const _iterator& a, const _iterator& b) {
     return a.current == b.current;
     }
+    
     friend bool operator!=(const _iterator& a, const _iterator& b) {
     return !(a == b);
     }
