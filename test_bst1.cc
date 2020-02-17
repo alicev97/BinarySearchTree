@@ -61,11 +61,11 @@ int main(){
     
     // copy ctor
     albero a3{a2};
-    std::cout << "copy ctor:\na2 = "<< a2 << "a3 = " << a3 << std::endl;
+    std::cout << "copy ctor:\na2 = "<< a2 << "\na3 = " << a3 << std::endl;
 
     // if I modify a2, a3 doesn't change
     a2.insert(coppia(29,2));
-    std::cout << "a2: " << a2 << "a3: " << a3 << std::endl;
+    std::cout << "a2: " << a2 << "\na3: " << a3 << std::endl;
 
     // move ctor
     albero a4{albero{7,23}};

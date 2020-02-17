@@ -1,7 +1,6 @@
 #ifndef __node_hpp__
 #define __node_hpp__
 
-#include "ap_error.h"
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -22,13 +21,13 @@ struct Node{
     Node() noexcept {}; // default ctor
     explicit Node(T pair): value{pair} {} // custom ctor 1
     explicit Node(T pair, Node* p): value{pair}, parent{p} {} // custom ctor 2
-    explicit Node(const std::unique_ptr<Node>& n): value{n->value} {
-        this->parent=n->parent;
+    explicit Node(const std::unique_ptr<Node>& n, Node* p): value{n->value} {
+        this->parent=p;
         if (n->left){
-            left = std::make_unique<Node>(n->left);
+            left = std::make_unique<Node>(n->left,this);
         }
         if (n->right){
-            right = std::make_unique<Node>(n->right);
+            right = std::make_unique<Node>(n->right,this);
         }
     }
     ~Node() noexcept = default; //dtor

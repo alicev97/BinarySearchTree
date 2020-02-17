@@ -1,7 +1,6 @@
 #ifndef __bst_hpp__
 #define __bst_hpp__
 
-#include "ap_error.h"
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -23,12 +22,10 @@ public:
     //ctors and dtor
     bst() = default; // default ctor
     ~bst() noexcept = default; // default dtor
-    explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{} //ctom ctor (key, value) -> calls the node ctor
-    explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {
-        std::cout << "with operator" << std::endl;
-    } //ctom ctor (key, value, op)
+    explicit bst(kT a,vT b): head{std::make_unique<node_type>(pair_type(a,b))}{} //ctom ctor (key, value)
+    explicit bst(kT a, vT b, const cmp& o): head{std::make_unique<node_type>(pair_type(a,b))}, op{o} {} //ctom ctor (key, value, op)
 
-    bst(const bst &b) {head = std::make_unique<node_type>(b.head);}
+    bst(const bst &b) {head = std::make_unique<node_type>(b.head,nullptr);}
 
     bst& operator=(const bst& b){
         head.reset();
@@ -122,7 +119,6 @@ public:
     void erase(const kT& x);
 
     // other useful functions
-    //returns a reference to the pair of the head
     iterator get_head(){return iterator{head.get()};} 
     iterator get_new_parent(pair_type x);
 

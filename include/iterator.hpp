@@ -1,7 +1,6 @@
 #ifndef __iterator_hpp__
 #define __iterator_hpp__
 
-#include "ap_error.h"
 #include <algorithm>
 #include <iostream>
 #include <iterator>

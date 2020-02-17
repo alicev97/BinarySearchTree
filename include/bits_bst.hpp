@@ -213,11 +213,13 @@ vT& bst<kT,vT,cmp>::operator[](OT&& x){
     if (it == end()){
         // build a pair with default value and the givan key
         pair_type p{x,vT{}};
-        // insert a new node and return the iterator
-        std::pair<iterator,bool> result = insert(p);
-        return result.first->second;
+        // insert a new node and return the value
+        insert(p);
+        // print this to distinguish the case in which the node already exists and has the default value
+        std::cout << "node already exists" << std::endl;
+        return p.second;
     } else {
-        // or if it already exists return the iterator
+        // or if it already exists return the value
         return it->second;
     }
 
