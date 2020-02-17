@@ -238,7 +238,7 @@ void bst<kT,vT,cmp>::balance(){
     std::pair<kT,vT> p;
     
     while (it != end()){
-        p = {it->first,it->second};
+        p = std::make_pair(it->first,it->second);
         tmp.push_back(p);
         ++it;
     }

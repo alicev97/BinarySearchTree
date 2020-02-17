@@ -38,10 +38,10 @@ struct Node{
     Node& operator=(Node&& n) = default; // move assignment 
     
     // copy semantic
-    Node(const Node& n): value{n.value} {}; // copy ctor
+    Node(const Node& n): value{n.value} {} // copy ctor
     Node& operator=(const Node& n){ // copy assignment
         auto tmp = n;
-        (*this) = std::move(tmp); // qua chiama il copy assignemnt e non il move!! ???
+        (*this) = std::move(tmp);
         return *this;
     }
 
