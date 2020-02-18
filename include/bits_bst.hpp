@@ -217,10 +217,10 @@ vT& bst<kT,vT,cmp>::operator[](OT&& x){
         // build a pair with default value and the givan key
         pair_type p{x,vT{}};
         // insert a new node and return the value
-        insert(p);
+        auto result = insert(p);
         // print this to distinguish the case in which the node already exists and has the default value
         std::cout << "node already exists" << std::endl;
-        return p.second;
+        return result.first->second;
     } else {
         // or if it already exists return the value
         return it->second;

@@ -20,7 +20,7 @@ In this project we've implemented a binary search tree. We've used 3 separated c
 
 We've created three different scripts to test all the implemented functions (directly or indirectly). In $\textit{test_node.cc}$ we've tested all constructors, move and copy semantics and node functions. In $\textit{test_bst1.cc}$ we've tested different tree constructors, move and copy semantics and different ways to add and remove  a node of a tree. Eventually in $\textit{test_bst2}$ we've checked other functions like balance, find, clear and operators.
 
-To compile our code we've written a Makefile so just typing make we will get all needed executables. We use the g++ compiler and we compiling with flags -Wall and -Wextra we can see that no warnings are produced. 
+To compile our code we've written a Makefile so just typing make we will get all needed executables. We use the g++ compiler and we compile with flags -Wall and -Wextra so we can see that no warnings are produced.  If we execute the tests using valgrind we can also see that they don't produce any memory leak.
 
 #### Functions  of tree:
 
@@ -38,7 +38,7 @@ To compile our code we've written a Makefile so just typing make we will get all
 
 - ##### emplace
 
-  emplace works as insert but it can takes as input both a pair or two values with whom it creates a new  node in place to insert it. In emplace but also in insert we take care of what happens if we are trying to insert or emplace the root node of the tree which is slightly different from the other nodes because while for other nodes we need to set the right pointer in parent, for the root node it must points to null pointer.
+  emplace works as insert but it can takes as input both a pair or two values with whom it creates a new  node in place to insert it. In emplace but also in insert we take care of what happens if we are trying to insert or emplace the root node of the tree which is slightly different from other nodes because while for other nodes we need to set the right pointer in parent, for the root node it must points to null pointer.
   
 - ##### erase
 
@@ -68,7 +68,7 @@ To compile our code we've written a Makefile so just typing make we will get all
 
 - ##### balance
 
-  this function balance an existing tree by copying all the pairs(key, value) into a vector in ascending order according with the value of the keys, cleaning the tree itself and then rebuilding it by calling $\textit{rebuild_from_vector}$. This one is a recursive function that, given a vector, a starting point and an end point, calls the $\textit{insert}$ on the midpoint and then call itself two times: one on the elements of the vector before the midpoint and one on the element after it.
+  this function balance an existing tree by copying all the pairs(key, value) into a vector in ascending order according with the value of the keys, cleaning the tree itself and then rebuilding it by calling $\textit{rebuild_from_vector}$. This one is a recursive function that, given a vector, a starting point and an end point, calls the $\textit{insert}$ on the midpoint and then call itself two times: one on the elements of the vector before the midpoint and one on the elements after it.
 
 - ##### begin
 
@@ -76,4 +76,4 @@ To compile our code we've written a Makefile so just typing make we will get all
 
 - ##### end
 
-  there are three different version of the $\textit{end}$ function: the first returns an iterator while the second and the third are constant functions and return a constant iterator. Each one of them initializes the iterator to the null pointer.
+  there are three different version of the $\textit{end}$ function: the first returns an iterator while the second and the third are constant functions and return a constant iterator. Each one of them initialises the iterator to the null pointer.
