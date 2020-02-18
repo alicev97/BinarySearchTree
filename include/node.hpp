@@ -19,7 +19,8 @@ struct Node{
 
     //ctors and destructor
     Node() noexcept {}; // default ctor
-    explicit Node(T pair): value{pair} {} // custom ctor 1
+    explicit Node(const T& pair): value{pair} {}
+    explicit Node(T&& pair): value{std::move(pair)} {} // custom ctor 1
     explicit Node(T pair, Node* p): value{pair}, parent{p} {} // custom ctor 2
     explicit Node(const std::unique_ptr<Node>& n, Node* p): value{n->value} {
         this->parent=p;
@@ -32,10 +33,11 @@ struct Node{
     }
     ~Node() noexcept = default; //dtor
 
+    
     // move semantic
     Node(Node&& n) noexcept = default; // move ctor
-    Node& operator=(Node&& n) = default; // move assignment 
-    
+    Node& operator=(Node&& n) noexcept = default; // move assignment
+
     // copy semantic
     Node(const Node& n): value{n.value} {} // copy ctor
     Node& operator=(const Node& n){ // copy assignment
@@ -43,7 +45,7 @@ struct Node{
         (*this) = std::move(tmp);
         return *this;
     }
-
+    
     //put-to overloading
     friend
     std::ostream& operator<<(std::ostream& os, const Node& n) {

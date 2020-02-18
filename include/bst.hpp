@@ -35,8 +35,8 @@ public:
     }
     
     // move semantic
-    bst(bst&& b) noexcept = default;
-    bst& operator=(bst&& b) noexcept = default;
+    bst(bst&& b) = default;
+    bst& operator=(bst&& b) = default;
 
     //iterators
     using iterator = _iterator<node_type,pair_type>;
@@ -45,18 +45,19 @@ public:
     // functions
 
     // insert
-    template<typename OT>
-    std::pair<iterator,bool> insert(OT&& x);
+    std::pair<iterator, bool> insert(const pair_type& x);
+    std::pair<iterator, bool> insert(pair_type&& x);
+  
 
     // emplace
     template<class... Types>
     std::pair<iterator,bool> emplace(Types&&... args);
 
     // clear
-    void clear();
+    void clear() noexcept { head.reset(nullptr); }
     
     // begin
-    iterator begin(){
+    iterator begin() noexcept {
         iterator tmp{head.get()};
 
         if(tmp == end()){ // nullptr
@@ -69,7 +70,7 @@ public:
         return tmp;
     }
 
-    const_iterator begin() const{
+    const_iterator begin() const noexcept {
         const_iterator tmp{head.get()};
 
        if(tmp == end()){ // nullptr
@@ -82,7 +83,7 @@ public:
         return tmp;
     }
 
-    const_iterator cbegin() const{
+    const_iterator cbegin() const noexcept {
         const_iterator tmp{head.get()};
 
         if(tmp == end()){ // nullptr
@@ -96,21 +97,20 @@ public:
     }
 
     // end
-    iterator end(){return iterator{nullptr};}
-
-    const_iterator end() const{return const_iterator{nullptr};}
-    const_iterator cend() const{return const_iterator{nullptr};}
+    iterator end() noexcept {return iterator{nullptr};}
+    const_iterator end() const noexcept {return const_iterator{nullptr};}
+    const_iterator cend() const noexcept {return const_iterator{nullptr};}
 
     // find
-    iterator find(const kT& x);
-    const_iterator find(const kT& x) const;
+    iterator find (const kT& x) noexcept;
+    const_iterator find (const kT& x) const noexcept;
 
     // balance
     void balance();
 
     // operator overloading 
-    template<typename OT>
-    vT& operator[](OT&& x);
+    vT& operator[](const kT& x);
+    vT& operator[](kT&& x);
 
     template<typename KT,typename VT,typename CMP>
     friend std::ostream& operator<<(std::ostream& os, const bst<KT,VT,CMP>& x);
@@ -119,8 +119,8 @@ public:
     void erase(const kT& x);
 
     // other useful functions
-    iterator get_head(){return iterator{head.get()};} 
-    iterator get_new_parent(pair_type x);
+    iterator get_head() const noexcept {return iterator{head.get()};} 
+    iterator get_new_parent (pair_type x) const noexcept;
 
     void rebuild_from_vector(std::vector<pair_type> v, std::size_t from,std::size_t to);
     void copy_sub_bst(const node_type* b);

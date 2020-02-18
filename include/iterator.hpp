@@ -74,11 +74,11 @@ public:
     return !(a == b);
     }
 
-    void go_left(){if(current != nullptr){current=current->left.get();}}
-    void go_right(){if(current != nullptr){current=current->right.get();}}
-    void go_up(){if(current != nullptr){current = current->parent;}}
+    void go_left() noexcept {if(current != nullptr){current=current->left.get();}}
+    void go_right() noexcept {if(current != nullptr){current=current->right.get();}}
+    void go_up() noexcept {if(current != nullptr){current = current->parent;}}
 
-    bool is_leaf(){
+    bool is_leaf() const noexcept {
         if(current != nullptr){
         if (current->left.get()==nullptr && current->right.get()==nullptr){
             return true;
@@ -88,7 +88,7 @@ public:
         } else {return false;}
     }
 
-    bool has_left(){
+    bool has_left() const noexcept {
         if(current != nullptr){
         if (current->left.get() != nullptr){
             return true;
@@ -98,7 +98,7 @@ public:
         } else {return false;}
     }
 
-    bool has_right(){
+    bool has_right() const noexcept {
         if(current != nullptr){
         if (current->right.get() != nullptr){
             return true;
@@ -108,16 +108,16 @@ public:
         } else {return false;}
     }
    
-   node_type* get_pointer(){return current;}
+   node_type* get_pointer() noexcept {return current;}
 
-   bool is_left(){
+   bool is_left() const noexcept {
        _iterator it2 = *this;
        it2.go_up();
        it2.go_left();
        if (it2==*this){ return true; } else { return false; }
    }
 
-   bool is_right(){
+   bool is_right() const noexcept {
        _iterator it2 = *this;
        it2.go_up();
        it2.go_right();

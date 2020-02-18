@@ -45,7 +45,8 @@ int main(){
     std::cout<< "Try to find 11: " << b.find(11) << std::endl; // calls the implementation that returns a const it
 
     // []
-    std::cout << "\nLooking for an existing value: a[8] = " << a[8] << std::endl;
+    int i{8};
+    std::cout << "\nLooking for an existing value with a left reference: a[8] = " << a[i] << std::endl;
     std::cout << "Modify an existing value: a[13] = " << a[13] << " --> ";
     a[13] = 26;
     std::cout << " a[13] = " << a[13] << std::endl;

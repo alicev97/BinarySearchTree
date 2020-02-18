@@ -39,7 +39,7 @@ int main(){
     // left reference pair
     coppia c1(7,18);
     a2.insert(c1);
-    std::cout << a2 << std::endl;
+    std::cout << a2  << std::endl;
     n1 = a2.get_head().get_pointer();
     nodo* n2 = n1->left.get();
     //std::cout << "head = n1:\n" << *n1 << "\nn1 left = n2:\n" << *n2 << std::endl; 
